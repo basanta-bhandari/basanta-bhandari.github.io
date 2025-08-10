@@ -32,4 +32,4 @@ document.querySelectorAll('.skill').forEach(skill => {
     });
 });
 
-console.log('Website loaded successfully! 🚀');
+console.log('Website loaded successfully! ');
