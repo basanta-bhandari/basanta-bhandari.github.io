@@ -8,7 +8,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ff2301 0%, #fff700 100%);
     min-height: 100vh;
 }
 
@@ -78,14 +78,11 @@ section {
     border-bottom: 1px solid #f0f0f0;
 }
 
-section:last-child {
-    border-bottom: none;
-}
 
 h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-    color: #667eea;
+    color: #ffffff;
 }
 
 .about-content {
@@ -99,50 +96,35 @@ h2 {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    color: #333;
-    background: linear-gradient(135deg, #ea7866 0%, #a29f4b 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 4rem;
     margin: 0 auto;
 }
 
-.skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-}
 
-.skill {
-    background: #667eea;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
-
-.project {
-    background: #f8f9fa;
+.project{
+    background: #ffc21b;
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
 }
 
 .project h3 {
-    color: #667eea;
+    color: #ffffff;
     margin-bottom: 10px;
 }
 
 footer {
     text-align: center;
     padding: 40px;
-    background: #333;
+    background: #ff5f02;
     color: white;
 }
-
+.pjs{
+    text-decoration: none;
+    color: white;    
+}
 @keyframes fadeInUp {
     from {
         opacity: 0;

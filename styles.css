@@ -7,8 +7,8 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background: linear-gradient(135deg, #ea7866 0%, #a29f4b 100%);
+    color: black;
+    background: linear-gradient(135deg, #ff2301 0%, #fff700 100%);
     min-height: 100vh;
 }
 
@@ -77,7 +77,12 @@ h1 {
     font-size: 4rem;
     margin: 0 auto;
 }
-
+footer {
+    text-align: center;
+    padding: 40px;
+    background: #ff5f02;
+    color: white;
+}
 
 @keyframes fadeInUp {
     from {

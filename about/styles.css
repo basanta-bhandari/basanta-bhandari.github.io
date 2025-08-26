@@ -8,7 +8,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #ea7866 0%, #a29f4b 100%);
+    background: linear-gradient(135deg, #ff2301 0%, #fff700 100%);
     min-height: 100vh;
 }
 
@@ -25,7 +25,6 @@ header {
 }
 
 h1 {
-    font-size: 3rem;
     margin-bottom: 10px;
     opacity: 0;
     animation: fadeInUp 1s ease forwards;
@@ -50,11 +49,10 @@ h1 {
     margin: 0 10px;
     background: rgba(255, 255, 255, 0.2);
     color: white;
-    text-decoration: none;
     border-radius: 25px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
+
+    
 }
 
 .btn:hover {
@@ -78,18 +76,8 @@ section {
     border-bottom: 1px solid #f0f0f0;
 }
 
-
-h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #667eea;
-}
-
-.about-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 40px;
-    align-items: center;
+section:last-child {
+    border-bottom: none;
 }
 
 .profile-pic {
@@ -102,24 +90,25 @@ h2 {
     margin: 0 auto;
 }
 
-
-.project{
-    background: #fcfc0263;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+.skills {
+    margin-top: 20px; 
 }
 
-.project h3 {
-    color: #667eea;
-    margin-bottom: 10px;
+.skill {
+    background:#ffbb00;
+    color: rgb(255, 255, 255);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
 }
+
 
 footer {
     text-align: center;
     padding: 40px;
-    background: #333;
+    background: #ff5f02;
     color: white;
+    text-decoration: none;
 }
 
 @keyframes fadeInUp {
@@ -133,26 +122,4 @@ footer {
     }
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    .about-content {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-    
-    section {
-        padding: 40px 20px;
-    }
-    
-    .btn {
-        display: block;
-        margin: 10px 0;
-    }
-}
+
