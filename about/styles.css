@@ -51,8 +51,6 @@ h1 {
     color: white;
     border-radius: 25px;
     transition: all 0.3s ease;
-
-    
 }
 
 .btn:hover {
@@ -102,7 +100,6 @@ section:last-child {
     font-size: 0.9rem;
 }
 
-
 footer {
     text-align: center;
     padding: 40px;
@@ -121,5 +118,3 @@ footer {
         transform: translateY(0);
     }
 }
-
-
