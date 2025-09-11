@@ -108,6 +108,13 @@ footer {
     text-decoration: none;
 }
 
+
+.pjs{
+    text-decoration: none;
+    color: white;    
+}
+
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
