@@ -497,7 +497,7 @@
       if (!value) {
         setFieldState('apiKey', 'invalid', 'API key is required');
         return false;
-      } else if (value.length < 30) {
+      } else if (value.length < 36) {
         setFieldState('apiKey', 'invalid', 'This doesn\'t look like a valid API key');
         return false;
       } else {

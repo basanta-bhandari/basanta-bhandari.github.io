@@ -226,7 +226,7 @@ function setupDocumentListeners() {
     if (isTracking) {
       const now = Date.now();
       // Rate limit: don't send heartbeats more than once every 10 seconds
-      if (now - lastHeartbeat > 10000) {
+      if (now - lastHeartbeat > 30000) {
         await sendActivity('Document modified', 'building', true);
       }
     }
@@ -294,7 +294,7 @@ async function sendHeartbeat(payload, settings) {
   const url = `${settings.serverUrl.replace(/\/$/, '')}/api/hackatime/v1/heartbeats`;
   
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
   
   const options = {
     method: 'POST',
@@ -354,18 +354,21 @@ figma.on('close', () => {
   stopTracking();
 });
 
-// Handle runtime errors gracefully
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+// Handle runtime errors gracefully - Figma-compatible version
+window.addEventListener('error', (event) => {
+  console.error('Runtime error:', event.error);
   figma.ui.postMessage({
     type: 'error',
     message: 'An unexpected error occurred. Please try again.'
   });
 });
 
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  stopTracking(); // Clean shutdown
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled Promise rejection:', event.reason);
+  figma.ui.postMessage({
+    type: 'error',
+    message: 'Connection error occurred. Please check your settings.'
+  });
 });
 
 console.log('Hackatime for Figma plugin loaded successfully');
