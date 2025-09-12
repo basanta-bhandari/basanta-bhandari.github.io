@@ -166,8 +166,8 @@ async function startTracking(settings) {
     isTracking = true;
     lastActivity = Date.now();
     
-    // Send initial heartbeat
-    await sendActivity('Started tracking', 'debugging', false);
+    // Send initial heartbeat in background (don't block UI)
+    sendActivity('Started tracking', 'debugging', false).catch(console.error);
     
     // Set up document change listener for instant feedback
     setupDocumentListeners();
@@ -291,7 +291,10 @@ async function sendActivity(description, category, isWrite) {
 
 // Network layer
 async function sendHeartbeat(payload, settings) {
-  const url = `${settings.serverUrl.replace(/\/$/, '')}/api/v1/users/current/heartbeats`;
+  const url = `${settings.serverUrl.replace(/\/$/, '')}/api/hackatime/v1/heartbeats`;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
   
   const options = {
     method: 'POST',
@@ -300,11 +303,22 @@ async function sendHeartbeat(payload, settings) {
       'Authorization': `Bearer ${settings.apiKey}`,
       'User-Agent': 'Hackatime-Figma-Plugin/1.0.0'
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: controller.signal
   };
   
-  console.log('Sending heartbeat:', payload.entity, payload.category);
-  return await fetch(url, options);
+  try {
+    console.log('Sending heartbeat:', payload.entity, payload.category);
+    const response = await fetch(url, options);
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout - check connection');
+    }
+    throw error;
+  }
 }
 
 // Utility functions
