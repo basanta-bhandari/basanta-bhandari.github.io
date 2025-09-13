@@ -415,6 +415,259 @@
     </div>
   </div>
 
-<script src="standalone.js"></script>
+ <script>
+    let isTracking = false;
+    let currentSettings = { apiKey: '', serverUrl: 'https://hackatime.hackclub.com' };
+
+    // Initialize
+    window.onload = function() {
+      parent.postMessage({ pluginMessage: { type: 'get-settings' } }, '*');
+      
+      // Live validation
+      document.getElementById('apiKey').addEventListener('input', validateApiKey);
+      document.getElementById('serverUrl').addEventListener('input', validateServerUrl);
+    };
+
+    // Handle plugin messages
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      
+      switch (msg.type) {
+        case 'settings-loaded':
+          currentSettings = msg.settings;
+          document.getElementById('apiKey').value = msg.settings.apiKey || '';
+          document.getElementById('serverUrl').value = msg.settings.serverUrl || 'https://hackatime.hackclub.com';
+          validateForm();
+          break;
+
+        case 'testing-connection':
+          setButtonLoading('testBtn', true, 'Testing...');
+          showNotification('Testing connection...', 'info');
+          break;
+
+        case 'connection-tested':
+          setButtonLoading('testBtn', false, 'Test Connection');
+          if (msg.success) {
+            showNotification(msg.message || 'Connection successful!', 'success');
+            setFieldState('apiKey', 'valid');
+            setFieldState('serverUrl', 'valid');
+          } else {
+            showNotification(msg.message || 'Connection failed', 'error');
+            setFieldState('apiKey', 'invalid');
+          }
+          break;
+
+        case 'tracking-started':
+          isTracking = true;
+          updateTrackingUI(true);
+          setButtonLoading('startBtn', false, 'Start Tracking');
+          showNotification('Tracking started!', 'success');
+          break;
+
+        case 'tracking-stopped':
+          isTracking = false;
+          updateTrackingUI(false);
+          showNotification('Tracking stopped', 'info');
+          break;
+
+        case 'settings-saved':
+          showNotification('Settings saved', 'success');
+          break;
+
+        case 'heartbeat-sent':
+          updateActivity(msg.message, msg.category);
+          break;
+
+        case 'heartbeat-error':
+          updateActivity('Error: ' + msg.message, 'error');
+          break;
+
+        case 'error':
+          showNotification(msg.message, 'error');
+          setButtonLoading('startBtn', false, 'Start Tracking');
+          setButtonLoading('testBtn', false, 'Test Connection');
+          break;
+      }
+    };
+
+    function validateApiKey() {
+      const input = document.getElementById('apiKey');
+      const value = input.value.trim();
+      
+      if (!value) {
+        setFieldState('apiKey', 'invalid', 'API key is required');
+        return false;
+      } else if (value.length < 36) {
+        setFieldState('apiKey', 'invalid', 'This doesn\'t look like a valid API key');
+        return false;
+      } else {
+        setFieldState('apiKey', 'valid', 'Looks good');
+        return true;
+      }
+    }
+
+    function validateServerUrl() {
+      const input = document.getElementById('serverUrl');
+      const value = input.value.trim();
+      
+      if (!value) {
+        setFieldState('serverUrl', 'invalid', 'Server URL is required');
+        return false;
+      }
+      
+      try {
+        new URL(value);
+        setFieldState('serverUrl', 'valid', 'Valid URL');
+        return true;
+      } catch {
+        setFieldState('serverUrl', 'invalid', 'Invalid URL format');
+        return false;
+      }
+    }
+
+    function validateForm() {
+      return validateApiKey() && validateServerUrl();
+    }
+
+    function setFieldState(fieldId, state, message = '') {
+      const input = document.getElementById(fieldId);
+      const help = document.getElementById(fieldId + 'Help');
+      
+      input.classList.remove('valid', 'invalid');
+      
+      if (state === 'valid') {
+        input.classList.add('valid');
+        help.textContent = message || help.textContent;
+        help.className = 'field-success';
+      } else if (state === 'invalid') {
+        input.classList.add('invalid');
+        help.textContent = message;
+        help.className = 'field-error';
+      } else {
+        help.className = 'field-help';
+      }
+    }
+
+    function setButtonLoading(btnId, loading, text) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      
+      if (loading) {
+        btn.innerHTML = `<span class="spinner"></span>${text}`;
+      } else {
+        btn.textContent = text;
+      }
+    }
+
+    function showNotification(message, type) {
+      const notification = document.getElementById('notification');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 4000);
+    }
+
+    function updateTrackingUI(tracking) {
+      const card = document.getElementById('statusCard');
+      const label = document.getElementById('statusLabel');
+      const dot = document.getElementById('statusDot');
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      
+      if (tracking) {
+        card.className = 'status-card tracking';
+        label.className = 'status-label active';
+        label.innerHTML = '<span class="status-dot active" id="statusDot"></span>Tracking active';
+        startBtn.classList.add('hidden');
+        stopBtn.classList.remove('hidden');
+      } else {
+        card.className = 'status-card';
+        label.className = 'status-label';
+        label.innerHTML = '<span class="status-dot" id="statusDot"></span>Not tracking';
+        startBtn.classList.remove('hidden');
+        stopBtn.classList.add('hidden');
+      }
+    }
+
+    function updateActivity(message, category) {
+      const activity = document.getElementById('activityText');
+      const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      let prefix = '';
+      if (category === 'building') prefix = 'editing';
+      else if (category === 'debugging') prefix = 'navigating';
+      else if (category === 'designing') prefix = 'active';
+      else prefix = 'activity';
+      
+      activity.textContent = `${timestamp} - ${prefix}: ${message}`;
+    }
+
+    // Plugin actions
+    function testConnection() {
+      if (!validateForm()) {
+        showNotification('Please fix the errors above', 'error');
+        return;
+      }
+      
+      const settings = {
+        apiKey: document.getElementById('apiKey').value.trim(),
+        serverUrl: document.getElementById('serverUrl').value.trim()
+      };
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'test-connection', 
+          settings: settings 
+        } 
+      }, '*');
+    }
+
+    function startTracking() {
+      if (!validateForm()) {
+        showNotification('Please configure your settings first', 'error');
+        return;
+      }
+      
+      setButtonLoading('startBtn', true, 'Starting...');
+      
+      const settings = {
+        apiKey: document.getElementById('apiKey').value.trim(),
+        serverUrl: document.getElementById('serverUrl').value.trim()
+      };
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'start-tracking', 
+          settings: settings 
+        } 
+      }, '*');
+    }
+
+    function stopTracking() {
+      parent.postMessage({ pluginMessage: { type: 'stop-tracking' } }, '*');
+    }
+
+    function saveSettings() {
+      if (!validateForm()) {
+        showNotification('Please fix the errors first', 'error');
+        return;
+      }
+      
+      const settings = {
+        apiKey: document.getElementById('apiKey').value.trim(),
+        serverUrl: document.getElementById('serverUrl').value.trim()
+      };
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'save-settings', 
+          settings: settings 
+        } 
+      }, '*');
+    }
+  </script>
 </body>
 </html>
