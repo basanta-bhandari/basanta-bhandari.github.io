@@ -1,8 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Hackatime for Figma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hackatime - Time Tracker</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Track your coding and design time across web applications">
+  <meta name="theme-color" content="#ec3750">
+  <link rel="manifest" href="#" id="manifest-placeholder">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIGZpbGw9IiNlYzM3NTAiLz48cGF0aCBkPSJNNDggNDhoOTZ2OTZINDh6IiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==">
+  
   <style>
     * {
       box-sizing: border-box;
@@ -11,173 +19,175 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #ffffff;
-      color: #1a1a1a;
-      font-size: 14px;
-      line-height: 1.4;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
       -webkit-font-smoothing: antialiased;
     }
 
-    .plugin-container {
-      width: 420px;
-      min-height: 480px;
-      padding: 24px;
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: white;
+      box-shadow: 0 0 30px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
     }
 
     .header {
+      background: #ec3750;
+      color: white;
+      padding: 20px;
       text-align: center;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #f0f0f0;
-      padding-bottom: 16px;
+      position: relative;
     }
 
     .logo {
-      font-size: 18px;
+      font-size: 24px;
       font-weight: 700;
-      color: #ec3750;
       margin-bottom: 4px;
       letter-spacing: -0.5px;
     }
 
     .tagline {
-      color: #666;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .install-prompt {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 12px;
+      text-align: center;
+      font-size: 13px;
+      display: none;
+    }
+
+    .install-prompt button {
+      background: #ec3750;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-left: 8px;
+      cursor: pointer;
       font-size: 12px;
-      font-weight: 400;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 24px;
     }
 
     .status-card {
-      background: #fafafa;
-      border: 1px solid #e8e8e8;
-      border-radius: 6px;
-      padding: 14px;
-      margin-bottom: 20px;
-      transition: all 0.2s ease;
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
     }
 
     .status-card.tracking {
-      background: #f0f9f4;
-      border-color: #22c55e;
+      background: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
     }
 
-    .status-header {
-      display: flex;
+    .status-indicator {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
+      font-weight: 500;
       margin-bottom: 8px;
     }
 
-    .status-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: #666;
-    }
-
-    .status-label.active {
-      color: #16a34a;
-    }
-
     .status-dot {
-      width: 6px;
-      height: 6px;
-      background: #ccc;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      margin-right: 6px;
+      background: #6c757d;
     }
 
     .status-dot.active {
-      background: #22c55e;
+      background: #28a745;
       animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
+      50% { opacity: 0.5; }
     }
 
     .activity-text {
-      font-size: 11px;
-      color: #888;
-      font-family: 'SF Mono', Monaco, monospace;
-      line-height: 1.3;
+      font-size: 13px;
+      color: #6c757d;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
     }
 
     .form-section {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .field-group {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .field-label {
       display: block;
-      font-size: 12px;
       font-weight: 500;
-      color: #333;
       margin-bottom: 6px;
+      font-size: 14px;
     }
 
     .field-input {
       width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 13px;
-      background: white;
+      padding: 12px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 14px;
       transition: border-color 0.15s ease;
     }
 
     .field-input:focus {
       outline: none;
       border-color: #ec3750;
-      box-shadow: 0 0 0 2px rgba(236, 55, 80, 0.1);
-    }
-
-    .field-input.valid {
-      border-color: #22c55e;
-    }
-
-    .field-input.invalid {
-      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(236, 55, 80, 0.1);
     }
 
     .field-help {
-      font-size: 11px;
-      color: #888;
+      font-size: 12px;
+      color: #6c757d;
       margin-top: 4px;
     }
 
     .field-error {
-      font-size: 11px;
-      color: #ef4444;
-      margin-top: 4px;
-    }
-
-    .field-success {
-      font-size: 11px;
-      color: #22c55e;
+      color: #dc3545;
+      font-size: 12px;
       margin-top: 4px;
     }
 
     .btn {
       width: 100%;
-      padding: 10px 14px;
+      padding: 12px;
       border: none;
-      border-radius: 4px;
-      font-size: 13px;
+      border-radius: 6px;
+      font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s ease;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .btn:disabled {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
@@ -190,104 +200,110 @@
       background: #d63447;
     }
 
-    .btn-secondary {
-      background: #f5f5f5;
-      color: #666;
-      border: 1px solid #e0e0e0;
-    }
-
-    .btn-secondary:hover:not(:disabled) {
-      background: #eeeeee;
-      border-color: #d0d0d0;
-    }
-
     .btn-outline {
       background: transparent;
-      color: #666;
-      border: 1px solid #ddd;
+      color: #6c757d;
+      border: 1px solid #ced4da;
     }
 
     .btn-outline:hover:not(:disabled) {
-      border-color: #ccc;
-      background: #fafafa;
+      background: #f8f9fa;
+      border-color: #adb5bd;
     }
 
     .notification {
-      padding: 10px 12px;
-      border-radius: 4px;
+      padding: 12px;
+      border-radius: 6px;
       margin-bottom: 16px;
-      font-size: 12px;
+      font-size: 13px;
       display: none;
     }
 
     .notification.success {
-      background: #f0f9f4;
-      color: #16a34a;
-      border: 1px solid #dcfce7;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
     }
 
     .notification.error {
-      background: #fef2f2;
-      color: #dc2626;
-      border: 1px solid #fecaca;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
     }
 
     .notification.info {
-      background: #f0f9ff;
-      color: #2563eb;
-      border: 1px solid #dbeafe;
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
     }
 
-    .controls-section {
-      margin-bottom: 20px;
+    .project-section {
+      margin-bottom: 24px;
     }
 
-    .help-section {
-      background: #f9f9f9;
-      border-radius: 4px;
-      padding: 12px;
-      margin-top: 20px;
+    .project-selector {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
     }
 
-    .help-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 8px;
+    .project-input {
+      flex: 1;
     }
 
-    .help-steps {
-      font-size: 11px;
-      color: #666;
-      line-height: 1.4;
-    }
-
-    .help-steps ol {
-      padding-left: 16px;
+    .add-project-btn {
+      width: auto;
+      padding: 8px 16px;
       margin: 0;
     }
 
-    .help-steps li {
-      margin-bottom: 3px;
+    .project-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      background: #f8f9fa;
     }
 
-    .help-link {
-      color: #ec3750;
-      text-decoration: none;
+    .project-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e9ecef;
+      cursor: pointer;
+      transition: background 0.15s ease;
     }
 
-    .help-link:hover {
-      text-decoration: underline;
+    .project-item:hover {
+      background: #e9ecef;
+    }
+
+    .project-item:last-child {
+      border-bottom: none;
+    }
+
+    .project-item.active {
+      background: #ec3750;
+      color: white;
+    }
+
+    .project-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .project-url {
+      font-size: 11px;
+      opacity: 0.7;
+      font-family: monospace;
     }
 
     .spinner {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255,255,255,0.3);
       border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
+      border-top-color: currentColor;
+      animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
@@ -295,379 +311,510 @@
     }
 
     .footer {
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      padding: 16px 24px;
       text-align: center;
+      border-top: 1px solid #e9ecef;
+      font-size: 12px;
+      color: #6c757d;
     }
 
-    .footer-text {
-      font-size: 10px;
-      color: #999;
-      line-height: 1.3;
-    }
-
-    .footer-link {
-      color: #666;
-      text-decoration: none;
-    }
-
-    .footer-link:hover {
-      color: #ec3750;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Compact mode for smaller plugin window */
-    @media (max-height: 500px) {
-      .plugin-container { padding: 16px; }
-      .header { margin-bottom: 16px; }
-      .form-section, .controls-section { margin-bottom: 16px; }
-      .help-section { margin-top: 16px; }
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .app-container {
+        margin: 0;
+        min-height: 100vh;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="plugin-container">
+  <div class="app-container">
+    <!-- Install prompt -->
+    <div id="installPrompt" class="install-prompt">
+      <span>Install this app for better experience</span>
+      <button onclick="installApp()">Install</button>
+      <button onclick="dismissInstall()" style="background: #6c757d;">Later</button>
+    </div>
+
+    <!-- Header -->
     <div class="header">
       <div class="logo">Hackatime</div>
-      <div class="tagline">Track your Figma design time</div>
+      <div class="tagline">Web Time Tracker</div>
     </div>
 
-    <div id="notification" class="notification"></div>
+    <!-- Main content -->
+    <div class="main-content">
+      <!-- Notifications -->
+      <div id="notification" class="notification"></div>
 
-    <div class="status-card" id="statusCard">
-      <div class="status-header">
-        <div class="status-label" id="statusLabel">
+      <!-- Status -->
+      <div class="status-card" id="statusCard">
+        <div class="status-indicator" id="statusIndicator">
           <span class="status-dot" id="statusDot"></span>
-          Not tracking
+          <span id="statusText">Ready to track</span>
         </div>
-      </div>
-      <div class="activity-text" id="activityText">
-        Configure your settings below to get started
-      </div>
-    </div>
-
-    <div class="form-section">
-      <div class="field-group">
-        <label class="field-label" for="apiKey">API Key</label>
-        <input type="text" 
-               id="apiKey" 
-               class="field-input" 
-               placeholder="Your Hackatime API key"
-               autocomplete="off">
-        <div class="field-help" id="apiKeyHelp">
-          Find this in your Hackatime dashboard settings
+        <div class="activity-text" id="activityText">
+          Configure your settings and select a project to start tracking
         </div>
       </div>
 
-      <div class="field-group">
-        <label class="field-label" for="serverUrl">Server URL</label>
-        <input type="text" 
-               id="serverUrl" 
-               class="field-input" 
-               value="https://hackatime.hackclub.com"
-               placeholder="https://hackatime.hackclub.com">
-        <div class="field-help" id="serverUrlHelp">
-          Default Hack Club server or your custom instance
+      <!-- Settings -->
+      <div class="form-section">
+        <h3 style="margin-bottom: 16px; font-size: 16px;">Settings</h3>
+        
+        <div class="field-group">
+          <label class="field-label" for="apiKey">Hackatime API Key</label>
+          <input type="text" id="apiKey" class="field-input" placeholder="Your API key">
+          <div class="field-help">Get this from hackatime.hackclub.com/settings</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="serverUrl">Server URL</label>
+          <input type="text" id="serverUrl" class="field-input" value="https://hackatime.hackclub.com">
+          <div class="field-help">Default server or your custom instance</div>
+        </div>
+
+        <button class="btn btn-outline" onclick="testConnection()">
+          <span id="testSpinner"></span>
+          Test Connection
+        </button>
+      </div>
+
+      <!-- Project Management -->
+      <div class="project-section">
+        <h3 style="margin-bottom: 16px; font-size: 16px;">Projects</h3>
+        
+        <div class="project-selector">
+          <input type="text" id="projectName" class="field-input project-input" placeholder="Project name">
+          <button class="btn btn-outline add-project-btn" onclick="addProject()">Add</button>
+        </div>
+
+        <div class="project-list" id="projectList">
+          <div class="project-item" style="text-align: center; color: #6c757d; padding: 20px;">
+            No projects yet. Add one above to get started.
+          </div>
         </div>
       </div>
 
-      <button class="btn btn-outline" id="testBtn" onclick="testConnection()">
-        Test Connection
-      </button>
-    </div>
-
-    <div class="controls-section">
-      <button class="btn btn-primary" id="startBtn" onclick="startTracking()">
-        Start Tracking
-      </button>
-      
-      <button class="btn btn-secondary hidden" id="stopBtn" onclick="stopTracking()">
-        Stop Tracking
-      </button>
-
-      <button class="btn btn-secondary" onclick="saveSettings()">
-        Save Settings
-      </button>
-    </div>
-
-    <div class="help-section">
-      <div class="help-title">Quick Setup</div>
-      <div class="help-steps">
-        <ol>
-          <li>Visit <a href="https://hackatime.hackclub.com" target="_blank" class="help-link">hackatime.hackclub.com</a></li>
-          <li>Create account or sign in</li>
-          <li>Copy API key from Settings</li>
-          <li>Paste above and test connection</li>
-          <li>Start tracking your design time!</li>
-        </ol>
+      <!-- Controls -->
+      <div class="controls-section">
+        <button class="btn btn-primary" id="trackBtn" onclick="toggleTracking()">
+          <span id="trackSpinner"></span>
+          Start Tracking
+        </button>
       </div>
     </div>
 
+    <!-- Footer -->
     <div class="footer">
-      <div class="footer-text">
-        Made by <a href="https://github.com/basanta-bhandari" target="_blank" class="footer-link">Basanta Bhandari</a><br>
-        <a href="mailto:bhandari.basanta.47@gmail.com" class="footer-link">bhandari.basanta.47@gmail.com</a>
-      </div>
+      Made by <a href="https://github.com/basanta-bhandari" style="color: #ec3750;">Basanta Bhandari</a>
     </div>
   </div>
 
- <script>
-    let isTracking = false;
-    let currentSettings = { apiKey: '', serverUrl: 'https://hackatime.hackclub.com' };
+  <script>
+    // PWA State Management
+    class HackatimeTracker {
+      constructor() {
+        this.isTracking = false;
+        this.currentProject = null;
+        this.heartbeatInterval = null;
+        this.lastHeartbeat = 0;
+        this.settings = {
+          apiKey: localStorage.getItem('hackatime-api-key') || '',
+          serverUrl: localStorage.getItem('hackatime-server-url') || 'https://hackatime.hackclub.com'
+        };
+        this.projects = JSON.parse(localStorage.getItem('hackatime-projects') || '[]');
+        
+        this.init();
+      }
 
-    // Initialize
-    window.onload = function() {
-      parent.postMessage({ pluginMessage: { type: 'get-settings' } }, '*');
-      
-      // Live validation
-      document.getElementById('apiKey').addEventListener('input', validateApiKey);
-      document.getElementById('serverUrl').addEventListener('input', validateServerUrl);
-    };
+      init() {
+        // Load saved settings
+        document.getElementById('apiKey').value = this.settings.apiKey;
+        document.getElementById('serverUrl').value = this.settings.serverUrl;
+        
+        // Load projects
+        this.renderProjects();
+        
+        // Setup auto-save for settings
+        document.getElementById('apiKey').addEventListener('input', () => this.saveSettings());
+        document.getElementById('serverUrl').addEventListener('input', () => this.saveSettings());
+        
+        // Setup project input
+        document.getElementById('projectName').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.addProject();
+        });
 
-    // Handle plugin messages
-    window.onmessage = (event) => {
-      const msg = event.data.pluginMessage;
-      
-      switch (msg.type) {
-        case 'settings-loaded':
-          currentSettings = msg.settings;
-          document.getElementById('apiKey').value = msg.settings.apiKey || '';
-          document.getElementById('serverUrl').value = msg.settings.serverUrl || 'https://hackatime.hackclub.com';
-          validateForm();
-          break;
+        // Check for PWA install prompt
+        this.setupPWA();
+      }
 
-        case 'testing-connection':
-          setButtonLoading('testBtn', true, 'Testing...');
-          showNotification('Testing connection...', 'info');
-          break;
+      saveSettings() {
+        this.settings.apiKey = document.getElementById('apiKey').value.trim();
+        this.settings.serverUrl = document.getElementById('serverUrl').value.trim();
+        
+        localStorage.setItem('hackatime-api-key', this.settings.apiKey);
+        localStorage.setItem('hackatime-server-url', this.settings.serverUrl);
+      }
 
-        case 'connection-tested':
-          setButtonLoading('testBtn', false, 'Test Connection');
-          if (msg.success) {
-            showNotification(msg.message || 'Connection successful!', 'success');
-            setFieldState('apiKey', 'valid');
-            setFieldState('serverUrl', 'valid');
+      async testConnection() {
+        this.saveSettings();
+        
+        if (!this.settings.apiKey || this.settings.apiKey.length < 10) {
+          this.showNotification('Please enter a valid API key', 'error');
+          return;
+        }
+
+        const spinner = document.getElementById('testSpinner');
+        spinner.innerHTML = '<div class="spinner"></div>';
+        
+        try {
+          const response = await this.sendHeartbeat({
+            entity: 'connection-test',
+            type: 'app',
+            category: 'debugging',
+            time: Date.now() / 1000,
+            is_write: false,
+            language: 'Web',
+            project: 'Connection Test'
+          });
+
+          if (response.ok) {
+            this.showNotification('Connection successful!', 'success');
           } else {
-            showNotification(msg.message || 'Connection failed', 'error');
-            setFieldState('apiKey', 'invalid');
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
           }
-          break;
-
-        case 'tracking-started':
-          isTracking = true;
-          updateTrackingUI(true);
-          setButtonLoading('startBtn', false, 'Start Tracking');
-          showNotification('Tracking started!', 'success');
-          break;
-
-        case 'tracking-stopped':
-          isTracking = false;
-          updateTrackingUI(false);
-          showNotification('Tracking stopped', 'info');
-          break;
-
-        case 'settings-saved':
-          showNotification('Settings saved', 'success');
-          break;
-
-        case 'heartbeat-sent':
-          updateActivity(msg.message, msg.category);
-          break;
-
-        case 'heartbeat-error':
-          updateActivity('Error: ' + msg.message, 'error');
-          break;
-
-        case 'error':
-          showNotification(msg.message, 'error');
-          setButtonLoading('startBtn', false, 'Start Tracking');
-          setButtonLoading('testBtn', false, 'Test Connection');
-          break;
+        } catch (error) {
+          this.showNotification(`Connection failed: ${error.message}`, 'error');
+        } finally {
+          spinner.innerHTML = '';
+        }
       }
+
+      addProject() {
+        const input = document.getElementById('projectName');
+        const name = input.value.trim();
+        
+        if (!name) {
+          this.showNotification('Please enter a project name', 'error');
+          return;
+        }
+
+        // Create project with current URL as context
+        const project = {
+          id: Date.now().toString(),
+          name: name,
+          url: window.location.origin,
+          created: new Date().toISOString()
+        };
+
+        this.projects.unshift(project);
+        localStorage.setItem('hackatime-projects', JSON.stringify(this.projects));
+        
+        input.value = '';
+        this.renderProjects();
+        this.showNotification(`Project "${name}" added`, 'success');
+      }
+
+      renderProjects() {
+        const container = document.getElementById('projectList');
+        
+        if (this.projects.length === 0) {
+          container.innerHTML = `
+            <div class="project-item" style="text-align: center; color: #6c757d; padding: 20px;">
+              No projects yet. Add one above to get started.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = this.projects.map(project => `
+          <div class="project-item ${this.currentProject?.id === project.id ? 'active' : ''}" 
+               onclick="tracker.selectProject('${project.id}')">
+            <div class="project-name">${project.name}</div>
+            <div class="project-url">${project.url}</div>
+          </div>
+        `).join('');
+      }
+
+      selectProject(projectId) {
+        this.currentProject = this.projects.find(p => p.id === projectId);
+        this.renderProjects();
+        
+        if (this.currentProject) {
+          this.showNotification(`Selected: ${this.currentProject.name}`, 'info');
+        }
+      }
+
+      async toggleTracking() {
+        if (this.isTracking) {
+          this.stopTracking();
+        } else {
+          await this.startTracking();
+        }
+      }
+
+      async startTracking() {
+        if (!this.settings.apiKey) {
+          this.showNotification('Please configure your API key first', 'error');
+          return;
+        }
+
+        if (!this.currentProject) {
+          this.showNotification('Please select a project first', 'error');
+          return;
+        }
+
+        const spinner = document.getElementById('trackSpinner');
+        spinner.innerHTML = '<div class="spinner"></div>';
+
+        try {
+          // Send initial heartbeat
+          await this.sendActivity('Started tracking', 'debugging', false);
+          
+          this.isTracking = true;
+          this.updateUI();
+          
+          // Set up periodic heartbeats (every 2 minutes)
+          this.heartbeatInterval = setInterval(async () => {
+            if (this.isTracking && this.isPageActive()) {
+              await this.sendActivity('Active session', 'coding', false);
+            }
+          }, 120000);
+
+          // Listen for page activity
+          this.setupActivityListeners();
+          
+          this.showNotification('Tracking started!', 'success');
+        } catch (error) {
+          this.showNotification(`Failed to start: ${error.message}`, 'error');
+          this.isTracking = false;
+        } finally {
+          spinner.innerHTML = '';
+        }
+      }
+
+      stopTracking() {
+        this.isTracking = false;
+        
+        if (this.heartbeatInterval) {
+          clearInterval(this.heartbeatInterval);
+          this.heartbeatInterval = null;
+        }
+
+        this.updateUI();
+        this.showNotification('Tracking stopped', 'info');
+      }
+
+      setupActivityListeners() {
+        // Track focus/blur events
+        window.addEventListener('focus', () => {
+          if (this.isTracking) {
+            this.sendActivity('Window focused', 'coding', false).catch(console.error);
+          }
+        });
+
+        // Track keyboard/mouse activity
+        let activityTimeout;
+        const trackActivity = () => {
+          if (!this.isTracking) return;
+          
+          clearTimeout(activityTimeout);
+          activityTimeout = setTimeout(async () => {
+            const now = Date.now();
+            if (now - this.lastHeartbeat > 30000) { // 30 second rate limit
+              await this.sendActivity('User activity', 'coding', false);
+            }
+          }, 5000); // 5 second debounce
+        };
+
+        document.addEventListener('keydown', trackActivity);
+        document.addEventListener('mousemove', trackActivity);
+        document.addEventListener('click', trackActivity);
+      }
+
+      isPageActive() {
+        return document.visibilityState === 'visible' && document.hasFocus();
+      }
+
+      async sendActivity(description, category, isWrite) {
+        if (!this.isTracking || !this.currentProject) return;
+
+        const payload = {
+          entity: this.currentProject.name,
+          type: 'app',
+          category: category,
+          time: Date.now() / 1000,
+          is_write: isWrite,
+          language: 'Web',
+          project: this.currentProject.name,
+          branch: 'main'
+        };
+
+        try {
+          const response = await this.sendHeartbeat(payload);
+          
+          if (response.ok) {
+            this.lastHeartbeat = Date.now();
+            this.updateActivity(description, category);
+          } else {
+            throw new Error(`${response.status} ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Heartbeat failed:', error);
+          this.updateActivity(`Error: ${error.message}`, 'error');
+        }
+      }
+
+      async sendHeartbeat(payload) {
+        const url = `${this.settings.serverUrl.replace(/\/$/, '')}/api/hackatime/v1/heartbeats`;
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.settings.apiKey}`,
+              'User-Agent': 'Hackatime-Web-Tracker/1.0.0'
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+          return response;
+        } catch (error) {
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            throw new Error('Request timeout - check connection');
+          }
+          throw error;
+        }
+      }
+
+      updateUI() {
+        const statusCard = document.getElementById('statusCard');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const trackBtn = document.getElementById('trackBtn');
+        
+        if (this.isTracking) {
+          statusCard.classList.add('tracking');
+          statusDot.classList.add('active');
+          statusText.textContent = 'Tracking active';
+          trackBtn.textContent = 'Stop Tracking';
+          trackBtn.style.background = '#dc3545';
+        } else {
+          statusCard.classList.remove('tracking');
+          statusDot.classList.remove('active');
+          statusText.textContent = 'Ready to track';
+          trackBtn.textContent = 'Start Tracking';
+          trackBtn.style.background = '#ec3750';
+        }
+      }
+
+      updateActivity(message, category) {
+        const activity = document.getElementById('activityText');
+        const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        let prefix = category === 'coding' ? 'coding' : 
+                    category === 'debugging' ? 'session' : 'activity';
+        
+        activity.textContent = `${timestamp} - ${prefix}: ${message}`;
+      }
+
+      showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.display = 'block';
+        
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 4000);
+      }
+
+      // PWA Installation
+      setupPWA() {
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          
+          // Show install prompt if not dismissed
+          if (!localStorage.getItem('install-dismissed')) {
+            installPrompt.style.display = 'block';
+          }
+        });
+
+        // Install function for global access
+        window.installApp = async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+              installPrompt.style.display = 'none';
+              this.showNotification('App installed successfully!', 'success');
+            }
+            deferredPrompt = null;
+          }
+        };
+
+        window.dismissInstall = () => {
+          installPrompt.style.display = 'none';
+          localStorage.setItem('install-dismissed', 'true');
+        };
+
+        // Handle app installed
+        window.addEventListener('appinstalled', () => {
+          installPrompt.style.display = 'none';
+          this.showNotification('App installed! You can now use it offline.', 'success');
+        });
+      }
+    }
+
+    // Initialize app
+    const tracker = new HackatimeTracker();
+
+    // Global functions for onclick handlers
+    window.testConnection = () => tracker.testConnection();
+    window.addProject = () => tracker.addProject();
+    window.toggleTracking = () => tracker.toggleTracking();
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('data:application/javascript;base64,Ly8gU2VydmljZSBXb3JrZXIgZm9yIEhhY2thdGltZSBQV0EKY29uc3QgQ0FDSEVfTkFNRSA9ICdoYWNrYXRpbWUtdjEnOwpjb25zdCB1cmxzVG9DYWNoZSA9IFsnLyddOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZXZlbnQgPT4gewogIGV2ZW50LndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFX05BTUUpCiAgICAgIC50aGVuKGNhY2hlID0+IGNhY2hlLmFkZEFsbCh1cmxzVG9DYWNoZSkpCiAgKTsKfSk7CgpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZXZlbnQgPT4gewogIGV2ZW50LnJlc3BvbmRXaXRoKAogICAgY2FjaGVzLm1hdGNoKGV2ZW50LnJlcXVlc3QpCiAgICAgIC50aGVuKHJlc3BvbnNlID0+IHJlc3BvbnNlIHx8IGZldGNoKGV2ZW50LnJlcXVlc3QpKQogICk7Cn0pOw==')
+        .then(() => console.log('SW registered'))
+        .catch(() => console.log('SW registration failed'));
+    }
+
+    // Generate and inject manifest
+    const manifest = {
+      name: "Hackatime Time Tracker",
+      short_name: "Hackatime",
+      description: "Track your coding and design time across web applications",
+      start_url: "./",
+      display: "standalone",
+      background_color: "#ffffff",
+      theme_color: "#ec3750",
+      icons: [
+        {
+          src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIGZpbGw9IiNlYzM3NTAiLz48cGF0aCBkPSJNNDggNDhoOTZ2OTZINDh6IiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==",
+          sizes: "192x192",
+          type: "image/svg+xml"
+        }
+      ]
     };
 
-    function validateApiKey() {
-      const input = document.getElementById('apiKey');
-      const value = input.value.trim();
-      
-      if (!value) {
-        setFieldState('apiKey', 'invalid', 'API key is required');
-        return false;
-      } else if (value.length < 36) {
-        setFieldState('apiKey', 'invalid', 'This doesn\'t look like a valid API key');
-        return false;
-      } else {
-        setFieldState('apiKey', 'valid', 'Looks good');
-        return true;
-      }
-    }
-
-    function validateServerUrl() {
-      const input = document.getElementById('serverUrl');
-      const value = input.value.trim();
-      
-      if (!value) {
-        setFieldState('serverUrl', 'invalid', 'Server URL is required');
-        return false;
-      }
-      
-      try {
-        new URL(value);
-        setFieldState('serverUrl', 'valid', 'Valid URL');
-        return true;
-      } catch {
-        setFieldState('serverUrl', 'invalid', 'Invalid URL format');
-        return false;
-      }
-    }
-
-    function validateForm() {
-      return validateApiKey() && validateServerUrl();
-    }
-
-    function setFieldState(fieldId, state, message = '') {
-      const input = document.getElementById(fieldId);
-      const help = document.getElementById(fieldId + 'Help');
-      
-      input.classList.remove('valid', 'invalid');
-      
-      if (state === 'valid') {
-        input.classList.add('valid');
-        help.textContent = message || help.textContent;
-        help.className = 'field-success';
-      } else if (state === 'invalid') {
-        input.classList.add('invalid');
-        help.textContent = message;
-        help.className = 'field-error';
-      } else {
-        help.className = 'field-help';
-      }
-    }
-
-    function setButtonLoading(btnId, loading, text) {
-      const btn = document.getElementById(btnId);
-      btn.disabled = loading;
-      
-      if (loading) {
-        btn.innerHTML = `<span class="spinner"></span>${text}`;
-      } else {
-        btn.textContent = text;
-      }
-    }
-
-    function showNotification(message, type) {
-      const notification = document.getElementById('notification');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      notification.style.display = 'block';
-      
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 4000);
-    }
-
-    function updateTrackingUI(tracking) {
-      const card = document.getElementById('statusCard');
-      const label = document.getElementById('statusLabel');
-      const dot = document.getElementById('statusDot');
-      const startBtn = document.getElementById('startBtn');
-      const stopBtn = document.getElementById('stopBtn');
-      
-      if (tracking) {
-        card.className = 'status-card tracking';
-        label.className = 'status-label active';
-        label.innerHTML = '<span class="status-dot active" id="statusDot"></span>Tracking active';
-        startBtn.classList.add('hidden');
-        stopBtn.classList.remove('hidden');
-      } else {
-        card.className = 'status-card';
-        label.className = 'status-label';
-        label.innerHTML = '<span class="status-dot" id="statusDot"></span>Not tracking';
-        startBtn.classList.remove('hidden');
-        stopBtn.classList.add('hidden');
-      }
-    }
-
-    function updateActivity(message, category) {
-      const activity = document.getElementById('activityText');
-      const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      
-      let prefix = '';
-      if (category === 'building') prefix = 'editing';
-      else if (category === 'debugging') prefix = 'navigating';
-      else if (category === 'designing') prefix = 'active';
-      else prefix = 'activity';
-      
-      activity.textContent = `${timestamp} - ${prefix}: ${message}`;
-    }
-
-    // Plugin actions
-    function testConnection() {
-      if (!validateForm()) {
-        showNotification('Please fix the errors above', 'error');
-        return;
-      }
-      
-      const settings = {
-        apiKey: document.getElementById('apiKey').value.trim(),
-        serverUrl: document.getElementById('serverUrl').value.trim()
-      };
-      
-      parent.postMessage({ 
-        pluginMessage: { 
-          type: 'test-connection', 
-          settings: settings 
-        } 
-      }, '*');
-    }
-
-    function startTracking() {
-      if (!validateForm()) {
-        showNotification('Please configure your settings first', 'error');
-        return;
-      }
-      
-      setButtonLoading('startBtn', true, 'Starting...');
-      
-      const settings = {
-        apiKey: document.getElementById('apiKey').value.trim(),
-        serverUrl: document.getElementById('serverUrl').value.trim()
-      };
-      
-      parent.postMessage({ 
-        pluginMessage: { 
-          type: 'start-tracking', 
-          settings: settings 
-        } 
-      }, '*');
-    }
-
-    function stopTracking() {
-      parent.postMessage({ pluginMessage: { type: 'stop-tracking' } }, '*');
-    }
-
-    function saveSettings() {
-      if (!validateForm()) {
-        showNotification('Please fix the errors first', 'error');
-        return;
-      }
-      
-      const settings = {
-        apiKey: document.getElementById('apiKey').value.trim(),
-        serverUrl: document.getElementById('serverUrl').value.trim()
-      };
-      
-      parent.postMessage({ 
-        pluginMessage: { 
-          type: 'save-settings', 
-          settings: settings 
-        } 
-      }, '*');
-    }
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    document.getElementById('manifest-placeholder').href = manifestURL;
   </script>
 </body>
 </html>
